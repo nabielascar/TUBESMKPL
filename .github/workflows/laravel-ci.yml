@@ -35,6 +35,9 @@ jobs:
         extensions: mbstring, bcmath, pdo, pdo_mysql
         coverage: none
 
+    - name: Force fail for testing
+      run: exit 1
+
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
