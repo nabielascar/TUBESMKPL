@@ -58,5 +58,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/verifikasi-email', [AuthController::class, 'verifikasi']);
 Route::get('/api/reset-password', [AuthController::class, 'resetPassword']);
 // Route::get('/', [CampaignController::class, 'index']);
+$response = $this->get('/');
+$response->assertStatus(302);
 
 
