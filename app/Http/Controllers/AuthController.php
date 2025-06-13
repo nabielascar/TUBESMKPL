@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function login(){
-        return views('Auth.login');
+    public function login(Request $request)
+    {
+        return response()->json(['error' => 'forced fail'], 500);
     }
 
     public function register(){
