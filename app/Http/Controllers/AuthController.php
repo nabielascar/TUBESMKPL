@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 
+
 class AuthController extends Controller
 {
     public function login(){
-        return view('Auth.login');
+        return views('Auth.login');
     }
 
     public function register(){
@@ -18,11 +19,11 @@ class AuthController extends Controller
     }
 
     public function verifikasi(){
-        return view('Auth.verifikasi');
+        return views('Auth.verifikasi');
     }
 
     public function resetPassword(){
-        return view('Auth.resetPass');
+        return views('Auth.resetPass');
     }
 }
 
