@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
      public function login(Request $request)
     {
-        return response()->json(['error' => 'forced fail'], 500);
+        return response()->json(['error' => 'forced failed'], 500);
     }
     
     
