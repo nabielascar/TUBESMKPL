@@ -13,7 +13,7 @@ class CreateCampaignsTable extends Migration
      */
     public function up()
     {
-        Schema::create('campaigns', function (Blueprint $table) {
+        Schema::create('campaigns_v2', function (Blueprint $table) {
             $table->id(); // Kolom id sebagai primary key dengan AUTO_INCREMENT
             $table->string('name', 255); // Kolom name bertipe string
             $table->text('description'); // Kolom description bertipe text
