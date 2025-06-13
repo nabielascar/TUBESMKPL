@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+<<<<<<< Updated upstream
     public function login(){
-        return view('Auth.login');
+        return view('Auth.loginn');
     }
 
     public function register(){
@@ -27,6 +28,29 @@ class AuthController extends Controller
     }
     
     
+=======
+    
+    public function login(){
+        return views('Auth.login');
+    }
+
+    public function register(){
+        return view('Auth.registerr');
+    }
+
+    public function verifikasi(){
+        return views('Auth.verifikasii');
+    }
+
+    public function resetPassword(){
+        return views('Auth.resetPass');
+    }
+    
+    
+
+    
+    
+>>>>>>> Stashed changes
 }
 
 
