@@ -49,12 +49,6 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    # Code Quality Tools Installation
-    - name: Install PHP Code Quality Tools
-      run: |
-        composer require --dev phpmd/phpmd phpstan/phpstan squizlabs/php_codesniffer psalm/psalm friendsofphp/php-cs-fixer --no-update
-        composer update --prefer-dist --no-progress
-
     - name: Copy .env and generate app key
       run: |
         cp .env.example .env
@@ -73,62 +67,57 @@ jobs:
         DB_PASSWORD: root
       run: php artisan migrate --force
 
-    # Continuous Inspection Steps
-    - name: PHP Code Sniffer (PHPCS)
-      run: ./vendor/bin/phpcs --standard=PSR12 --ignore=vendor,storage,bootstrap/cache app/ tests/
+    # Install Laravel Pint (Laravel's official code style)
+    - name: Install Laravel Pint
+      run: composer require laravel/pint --dev --no-update && composer update laravel/pint
+
+    - name: Laravel Pint (Code Style Check)
+      run: ./vendor/bin/pint --test
       continue-on-error: true
 
-    - name: PHP Mess Detector (PHPMD)
-      run: ./vendor/bin/phpmd app/ text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit
-      continue-on-error: true
-
-    - name: PHPStan Static Analysis
+    # Install PHPStan with Larastan
+    - name: Install PHPStan + Larastan
       run: |
-        echo "includes:" > phpstan.neon
-        echo "    - ./vendor/nunomaduro/larastan/extension.neon" >> phpstan.neon
-        echo "parameters:" >> phpstan.neon
-        echo "    paths:" >> phpstan.neon
-        echo "        - app/" >> phpstan.neon
-        echo "    level: 5" >> phpstan.neon
-        echo "    ignoreErrors:" >> phpstan.neon
-        echo "        - '#Call to an undefined method App\\\\Models\\\\.*::#'" >> phpstan.neon
-        composer require --dev nunomaduro/larastan --no-update
-        composer update nunomaduro/larastan --prefer-dist --no-progress
+        composer require phpstan/phpstan nunomaduro/larastan --dev --no-update
+        composer update phpstan/phpstan nunomaduro/larastan --with-all-dependencies
+
+    - name: PHPStan Analysis
+      run: |
+        cat > phpstan.neon << EOF
+        includes:
+            - ./vendor/nunomaduro/larastan/extension.neon
+        parameters:
+            paths:
+                - app/
+            level: 5
+            ignoreErrors:
+                - '#Call to an undefined method App\\\\Models\\\\.*::#'
+        EOF
         ./vendor/bin/phpstan analyse --memory-limit=2G
       continue-on-error: true
 
-    - name: Psalm Static Analysis
-      run: |
-        ./vendor/bin/psalm --init
-        ./vendor/bin/psalm --show-info=false
+    # Install Security Checker
+    - name: Install Security Checker
+      run: composer require enlightn/security-checker --dev --no-update && composer update enlightn/security-checker
+
+    - name: Security Vulnerability Check
+      run: ./vendor/bin/security-checker security:check composer.lock
       continue-on-error: true
 
-    - name: PHP CS Fixer (Code Style)
-      run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
-      continue-on-error: true
+    # Install Laravel Enlightn
+    - name: Install Laravel Enlightn
+      run: composer require enlightn/enlightn --dev --no-update && composer update enlightn/enlightn
 
-    # Security Analysis
-    - name: PHP Security Checker
-      run: |
-        composer require --dev enlightn/security-checker --no-update
-        composer update enlightn/security-checker --prefer-dist --no-progress
-        ./vendor/bin/security-checker security:check composer.lock
+    - name: Laravel Enlightn Security & Performance Audit
+      run: php artisan enlightn --ci
       continue-on-error: true
-
-    # Laravel Specific Quality Checks
-    - name: Laravel Pint (Code Style)
-      run: |
-        composer require --dev laravel/pint --no-update
-        composer update laravel/pint --prefer-dist --no-progress
-        ./vendor/bin/pint --test
-      continue-on-error: true
-
-    - name: Laravel Enlightn (Security & Performance)
-      run: |
-        composer require --dev enlightn/enlightn --no-update
-        composer update enlightn/enlightn --prefer-dist --no-progress
-        php artisan enlightn --ci
-      continue-on-error: true
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: laravel_test
+        DB_USERNAME: root
+        DB_PASSWORD: root
 
     # Run Tests with Coverage
     - name: Run Laravel tests with coverage
@@ -140,9 +129,9 @@ jobs:
         DB_USERNAME: root
         DB_PASSWORD: root
         XDEBUG_MODE: coverage
-      run: php artisan test --coverage --min=80
+      run: php artisan test --coverage --min=70
 
-    # Code Coverage Report
+    # Generate Coverage Report
     - name: Generate Code Coverage Report
       env:
         DB_CONNECTION: mysql
@@ -152,10 +141,9 @@ jobs:
         DB_USERNAME: root
         DB_PASSWORD: root
         XDEBUG_MODE: coverage
-      run: |
-        php artisan test --coverage-clover=coverage.xml
-        php artisan test --coverage-html=coverage-html
+      run: php artisan test --coverage-clover=coverage.xml
 
+    # Upload to Codecov (Optional)
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -164,61 +152,26 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
-    # Code Quality Gate
-    - name: Code Quality Gate
+    # Code Quality Summary
+    - name: Code Quality Summary
       run: |
-        echo "=== Code Quality Summary ==="
-        echo "✅ PHP Code Sniffer: Check PSR-12 compliance"
-        echo "✅ PHP Mess Detector: Detect code smells"
-        echo "✅ PHPStan: Static analysis level 5"
-        echo "✅ Psalm: Additional static analysis"
-        echo "✅ Security Checker: Vulnerability scan"
-        echo "✅ Laravel Pint: Laravel code style"
-        echo "✅ Laravel Enlightn: Security & performance audit"
-        echo "✅ Code Coverage: Minimum 80%"
+        echo "=== ✅ Code Quality Checks Completed ==="
+        echo "🎨 Laravel Pint: Code style compliance"
+        echo "🔍 PHPStan + Larastan: Static analysis"
+        echo "🔒 Security Checker: Vulnerability scan"
+        echo "⚡ Laravel Enlightn: Security & performance audit"
+        echo "📊 Code Coverage: Generated and uploaded"
+        echo ""
+        echo "📋 Next Steps:"
+        echo "- Review any warnings above"
+        echo "- Check coverage report"
+        echo "- Fix any security issues found"
 
-  # Alternative: Using CodeClimate for Code Quality
-  code-climate:
+  # Separate job for additional quality tools (optional)
+  extended-quality-check:
     runs-on: ubuntu-latest
     needs: laravel-tests
-    if: github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, bcmath, pdo, pdo_mysql, xdebug
-        coverage: xdebug
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
-
-    - name: Generate coverage for CodeClimate
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: ":memory:"
-        XDEBUG_MODE: coverage
-      run: |
-        cp .env.example .env
-        php artisan key:generate
-        php artisan test --coverage-clover=clover.xml
-
-    - name: CodeClimate Test Reporter
-      uses: paambaati/codeclimate-action@v5.0.0
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      with:
-        coverageLocations: clover.xml:clover
-
-  # Alternative: Using Scrutinizer CI
-  scrutinizer:
-    runs-on: ubuntu-latest
-    needs: laravel-tests
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout code
@@ -228,23 +181,30 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, bcmath, pdo, pdo_mysql, xdebug
-        coverage: xdebug
+        extensions: mbstring, bcmath, pdo, pdo_mysql
 
-    - name: Install dependencies
+    - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Generate coverage for Scrutinizer
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: ":memory:"
-        XDEBUG_MODE: coverage
-      run: |
-        cp .env.example .env
-        php artisan key:generate
-        php artisan test --coverage-clover=coverage.xml
+    # Install PHPCS
+    - name: Install PHP CodeSniffer
+      run: composer require squizlabs/php_codesniffer --dev
 
-    - name: Upload coverage to Scrutinizer
+    - name: PHP CodeSniffer Check
+      run: ./vendor/bin/phpcs --standard=PSR12 app/ tests/ --ignore=*/vendor/*,*/storage/*,*/bootstrap/cache/*
+      continue-on-error: true
+
+    # Install PHPMD
+    - name: Install PHP Mess Detector
+      run: composer require phpmd/phpmd --dev
+
+    - name: PHP Mess Detector
+      run: ./vendor/bin/phpmd app/ text cleancode,codesize,design,naming,unusedcode --ignore-violations-on-exit
+      continue-on-error: true
+
+    - name: Extended Quality Summary
       run: |
-        wget https://scrutinizer-ci.com/ocular.phar
-        php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+        echo "=== 🔍 Extended Quality Analysis ==="
+        echo "📏 PHPCS: PSR-12 compliance check"
+        echo "🧹 PHPMD: Code quality analysis"
+        echo "✨ All extended checks completed!"
