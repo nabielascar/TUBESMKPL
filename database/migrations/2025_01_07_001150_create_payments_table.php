@@ -13,7 +13,7 @@ class CreatePaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('payments_v2', function (Blueprint $table) {
             $table->id(); // Primary key dengan auto increment
             $table->unsignedBigInteger('campaign_id'); // Kolom untuk foreign key ke tabel campaigns
             $table->string('status', 255)->default('ACTIVE'); // Kolom status dengan default ACTIVE
