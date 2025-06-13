@@ -10,18 +10,31 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+
     
-<<<<<<< Updated upstream
-=======
+
     public function registrasi(Request $request)
 {
     // Paksa error agar CI gagal
     throw new \Exception('Forced error for testing CI failed');
     // ...existing code...
 }
->>>>>>> Stashed changes
+
     
     
+
+    public function login(){
+        return view('Auth.loginn');
+    }
+
+    public function register(){
+        return view('Auth.register');
+    }
+
+    public function verifikasi(){
+        return view('Auth.verifikasi');
+    }
+
 
     public function login(Request $request)
     {
