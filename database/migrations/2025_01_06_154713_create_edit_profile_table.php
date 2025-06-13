@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('edit_profile', function (Blueprint $table) {
             $table->id();
-$table->foreign('user_id')->references('id')->on('accounts')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id'); // Tambahkan ini
+            $table->foreign('user_id')->references('id')->on('accounts')->onDelete('cascade');
             $table->string('phone_number')->nullable();
             $table->string('profile_picture')->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
