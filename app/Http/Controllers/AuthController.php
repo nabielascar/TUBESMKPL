@@ -14,18 +14,6 @@ class AuthController extends Controller
     {
         return response()->json(['error' => 'forced fail'], 500);
     }
-
-    public function register(){
-        return view('Auth.register');
-    }
-
-    public function verifikasi(){
-        return views('Auth.verifikasi');
-    }
-
-    public function resetPassword(){
-        return views('Auth.resetPass');
-    }
 }
 public function testWillFail()
 {
