@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('accounts', function (Blueprint $table) {
-    $table->string('reset_token')->nullable();
-    $table->timestamp('reset_token_expiry')->nullable();
-});
+        Schema::create('accounts', function (Blueprint $table) {
+            $table->id();
+            // add your columns here
+            $table->timestamps();
+        });
     }
 
     /**
@@ -22,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('account', function(Blueprint $table){
-            $table->dropColumn(['reset_token', 'reset_token_expiry']);
-        });
+        Schema::dropIfExists('accounts');
     }
 };
