@@ -25,6 +25,14 @@ class AuthController extends Controller
     public function resetPassword(){
         return views('Auth.resetPass');
     }
+    
+    
 }
+public function invalidSyntax() {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    return "Ini adalah kode rusak // Tanpa penutup string atau semicolon
+}
+
 
 
