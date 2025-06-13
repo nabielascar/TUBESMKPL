@@ -15,10 +15,7 @@ class AuthController extends Controller
         return response()->json(['error' => 'forced fail'], 500);
     }
 }
-public function testWillFail()
-{
-    $this->assertTrue(false); // Test ini pasti gagal
-}
+
 
 
 
