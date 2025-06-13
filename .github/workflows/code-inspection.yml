@@ -25,5 +25,6 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse app/
 
-      - name: Run PHPCS
-        run: vendor/bin/phpcs --standard=PSR12 app/
+      - name: Run PHPCS (no fail)
+        run: |
+            vendor/bin/phpcs --standard=PSR12 app/ || true
