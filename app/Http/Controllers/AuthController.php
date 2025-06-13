@@ -28,11 +28,11 @@ class AuthController extends Controller
     
     
 }
-public function invalidSyntax() {
-    ini_set('display_errors', 1);
-    error_reporting(E_ALL);
-    return "Ini adalah kode rusak // Tanpa penutup string atau semicolon
+public function test_force_fail() {
+    $this->get('/login');         // Panggil route yang error
+    $this->assertTrue(false);    // Sengaja gagal
 }
+
 
 
 
