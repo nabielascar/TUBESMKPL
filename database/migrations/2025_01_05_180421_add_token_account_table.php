@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('account', function (Blueprint $table) {
-            $table->string('reset_token')->nullable();
-            $table->timestamp('reset_token_expiry')->nullable();
-        });
+        Schema::table('accounts', function (Blueprint $table) {
+    $table->string('reset_token')->nullable();
+    $table->timestamp('reset_token_expiry')->nullable();
+});
     }
 
     /**
