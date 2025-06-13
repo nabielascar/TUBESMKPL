@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 
+
 class AuthController extends Controller
 {
     public function login(){
@@ -24,6 +25,11 @@ class AuthController extends Controller
     public function resetPassword(){
         return view('Auth.resetPass');
     }
+    
+    
 }
+
+
+
 
 
