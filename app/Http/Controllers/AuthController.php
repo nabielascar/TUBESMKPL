@@ -26,12 +26,10 @@ class AuthController extends Controller
     public function resetPassword(){
         return views('Auth.resetPass');
     }
-    
-    
 }
-public function test_force_fail() {
-    $this->get('/login');         // Panggil route yang error
-    $this->assertTrue(false);    // Sengaja gagal
+public function testWillFail()
+{
+    $this->assertTrue(false); // Test ini pasti gagal
 }
 
 
