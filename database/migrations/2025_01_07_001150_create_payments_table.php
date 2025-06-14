@@ -21,7 +21,7 @@ class CreatePaymentsTable extends Migration
             $table->timestamps(); // Kolom created_at dan updated_at dengan timestamp otomatis
 
             // Foreign key constraint
-            $table->foreign('campaign_id')->references('id')->on('campaigns')->onDelete('cascade');
+            $table->foreign('campaign_id')->references('id')->on('campaigns_v2')->onDelete('cascade');
         });
     }
 
